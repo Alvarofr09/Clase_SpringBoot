@@ -1,0 +1,133 @@
+package com.prueba.prueba.controller;
+
+import com.prueba.prueba.model.Tarea;
+import com.prueba.prueba.servicio.TareaServicio;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController ->> CONTROLLER (DEVUELVE LAS VISTAS)
+@RequestMapping("/api/tareas")
+public class TareaRestController {
+    private TareaServicio tareaService;
+
+    @Autowired
+    public TareaRestController(TareaServicio tareaService) {
+        this.tareaService = tareaService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Tarea>> obtenerTodas() {
+        List<Tarea> tareas = tareaService.obtenerTodas();
+        return ResponseEntity.ok(tareas);
+    }
+
+    @PostMapping
+    public ResponseEntity<Tarea> crearTarea(@RequestBody Tarea tarea) {
+        Tarea nuevaTarea = tareaService.guardarTarea(tarea);
+        return ResponseEntity.ok(nuevaTarea);
+    }
+
+}
+
+
+
+package com.prueba.prueba.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity // Marcar la clase cmo una entidad en bbdd
+public class Tarea {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String description;
+    private boolean completada;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isCompletada() {
+        return completada;
+    }
+
+    public void setCompletada(boolean completada) {
+        this.completada = completada;
+    }
+}
+
+
+package com.prueba.prueba.repositorio;
+
+import com.prueba.prueba.model.Tarea;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface TareaRepositorio extends JpaRepository<Tarea, Long> {
+
+
+}
+
+HERENCIA: ...extends Persona
+
+
+
+APPLICATION PROPERTIES:
+spring.application.name=prueba
+spring.h2.console.enabled=true
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+management.endpoints.web.exposure.include=*
+management.endpoint.health.show-details=always
+
+
+package com.prueba.prueba.servicio;
+
+import com.prueba.prueba.model.Tarea;
+import com.prueba.prueba.repositorio.TareaRepositorio;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TareaServicio {
+    private TareaRepositorio tareaRepository;
+
+    @Autowired
+    public TareaServicio(TareaRepositorio tareaRepositorio) {
+        this.tareaRepository = tareaRepositorio;
+    }
+
+    //  GET ALL
+
+    public List<Tarea> obtenerTodas() {
+        return tareaRepository.findAll();
+    }
+
+    public Tarea guardarTarea(Tarea tarea) {
+        return tareaRepository.save(tarea);
+    }
+}

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -22,9 +23,13 @@ public class NotesController {
     }
 
     @GetMapping
-    public String listNotes(Model model) {
-        List<NotesModel> notes = noteService.getAllNotes();
-        model.addAttribute("notes", notes);
+    public String listNotes(@RequestParam(value = "search", required = false) String search,
+                            Model model, Principal principal) {
+        if (search != null && !search.isEmpty()) {
+            model.addAttribute("notes", noteService.getNoteByTitleContainingAndAuthor(search, principal));
+        } else {
+            model.addAttribute("notes", noteService.getAllNotesByUsername(principal));
+        }
         return "index";
     }
 
@@ -50,8 +55,8 @@ public class NotesController {
     }
 
     @PostMapping("/newNote")
-    public String newNote(@ModelAttribute NotesModel noteModel) {
-        noteService.createNewNote(noteModel);
+    public String newNote(@ModelAttribute NotesModel noteModel, Principal principal) {
+        noteService.createNewNote(noteModel, principal);
         return "redirect:/notes";
     }
 

@@ -1,9 +1,6 @@
 package com.notes.notes.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class NotesModel {
@@ -14,6 +11,10 @@ public class NotesModel {
     private String title;
     private String description;
     private boolean complete;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AppUser author;
 
 
     public long getId() {
@@ -46,5 +47,13 @@ public class NotesModel {
 
     public void setComplete(boolean complete) {
         this.complete = complete;
+    }
+
+    public AppUser getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(AppUser author) {
+        this.author = author;
     }
 }

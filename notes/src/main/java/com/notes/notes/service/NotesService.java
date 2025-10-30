@@ -1,6 +1,7 @@
 package com.notes.notes.service;
 
 
+import com.notes.notes.exception.UnauthorizedAccessException;
 import com.notes.notes.model.AppUser;
 import com.notes.notes.model.NotesModel;
 import com.notes.notes.repository.AppUserRepository;
@@ -74,9 +75,13 @@ public class NotesService {
     }
 
     // Update an existing note
-    public NotesModel updateNote(NotesModel noteModel) {
+    public NotesModel updateNote(NotesModel noteModel, Principal principal){
         NotesModel existingNote = noteRepository.findById(noteModel.getId())
                 .orElseThrow(() -> new NoSuchElementException("Note not found with ID: " + noteModel.getId()));
+
+        if (!existingNote.getAuthor().getUsername().equals(principal.getName())) {
+            throw new UnauthorizedAccessException("No tienes permiso para editar esta nota");
+        }
 
         existingNote.setTitle(noteModel.getTitle());
         existingNote.setDescription(noteModel.getDescription());

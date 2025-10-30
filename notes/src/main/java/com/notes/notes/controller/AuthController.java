@@ -1,5 +1,6 @@
 package com.notes.notes.controller;
 
+import com.notes.notes.dto.RegisterDto;
 import com.notes.notes.model.AppUser;
 import com.notes.notes.repository.AppUserRepository;
 import jakarta.validation.constraints.NotBlank;
@@ -41,13 +42,13 @@ public class AuthController {
     @PostMapping("/register")
     public String Register(@ModelAttribute("userDto") @Validated RegisterDto dto, Model model) {
         // validacion si existe el usuario
-        if (repository.existsByUsername(dto.username)) {
+        if (repository.existsByUsername(dto.username())) {
             model.addAttribute("error", "El usuario ya existe");
             return "register";
         }
         AppUser u = new AppUser();
-        u.setUsername(dto.username);
-        u.setPassword(encoder.encode(dto.password));
+        u.setUsername(dto.username());
+        u.setPassword(encoder.encode(dto.password()));
         u.setRole("ROLE_USER");
 
         repository.save(u);
@@ -59,6 +60,4 @@ public class AuthController {
     public String logout(){
         return "login";
     }
-
-    public record RegisterDto(@NotBlank String username, @NotBlank String password) {}
 }

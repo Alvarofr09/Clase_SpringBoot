@@ -42,9 +42,9 @@ public class NotesController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateNote(@PathVariable long id, @ModelAttribute NotesModel updatedNote) {
+    public String updateNote(@PathVariable long id, @ModelAttribute NotesModel updatedNote, Principal principal) {
         updatedNote.setId(id);
-        noteService.updateNote(updatedNote);
+        noteService.updateNote(updatedNote, principal);
         return "redirect:/notes";
     }
 

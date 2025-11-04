@@ -41,7 +41,7 @@ public class NotesController {
         return "noteDetails";
     }
 
-    @PostMapping("/{id}/update")
+    @PutMapping("/{id}")
     public String updateNote(@PathVariable long id, @ModelAttribute NotesModel updatedNote, Principal principal) {
         updatedNote.setId(id);
         noteService.updateNote(updatedNote, principal);
@@ -61,7 +61,7 @@ public class NotesController {
     }
 
 
-    @PostMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public String deleteNote(@PathVariable long id) {
         noteService.deleteNote(id);
         return "redirect:/notes";

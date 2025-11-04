@@ -15,7 +15,9 @@
             <h5 class="mb-0"><i class="fa-solid fa-pen-to-square me-2"></i>Actualizar Nota</h5>
         </div>
         <div class="card-body">
-            <form th:action="@{/notes/{id}/update(id=${note.id})}" th:object="${note}" method="post">
+            <form th:action="@{/notes/{id}(id=${note.id})}" th:object="${note}" method="post">
+                <input type="hidden" name="_method" value="put" />
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="mb-3">
                     <label for="noteTitle" class="form-label fw-semibold">Título</label>
                     <input type="text" class="form-control" id="noteTitle" th:field="*{title}" placeholder="Escribe el título" required />

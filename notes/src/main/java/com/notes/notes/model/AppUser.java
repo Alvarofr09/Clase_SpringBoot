@@ -2,6 +2,8 @@ package com.notes.notes.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class AppUser {
 
@@ -17,6 +19,17 @@ public class AppUser {
 
     @Column(nullable = false, length = 30)
     private String role;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<NotesModel> notes = new java.util.ArrayList<>();
+
+    public List<NotesModel> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<NotesModel> notes) {
+        this.notes = notes;
+    }
 
     public AppUser(){}
 
@@ -64,5 +77,6 @@ public class AppUser {
         this.password = password;
         this.role = role;
     }
+
 
 }

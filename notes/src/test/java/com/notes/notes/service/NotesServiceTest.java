@@ -104,11 +104,27 @@ public class NotesServiceTest {
     }
 
 
-//    @Test
-//    void testUpdateNote() {
-//        // Test de actualizar nota
-//    }
-//
+    @Test
+    void testUpdateNote() {
+        // Test de actualizar nota
+        // Arrange
+        Principal mockPrincipal = () -> "usuario";
+        AppUser user = new AppUser();
+        user.setUsername("usuario");
+
+        when(userRepository.findByUsername("usuario")).thenReturn(Optional.of(user));
+
+        NotesModel nota = new NotesModel();
+        nota.setTitle("Prueba");
+        nota.setDescription("Desc");
+        nota.setComplete(false);
+
+        when(notesRepository.save(any(NotesModel.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        NotesModel result = notesService.createNewNote(nota, mockPrincipal);
+    }
+
     @Test
     void testDeleteNote() {
         // Test de borrar nota

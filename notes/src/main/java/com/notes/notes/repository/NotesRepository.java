@@ -6,10 +6,11 @@ import com.notes.notes.model.NotesModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NotesRepository extends JpaRepository<NotesModel, Long>{
     List<NotesModel> findByAuthorUsername(String username);
-    List<NotesModel> findByTitleAndAuthor(String title, AppUser author);
+    Optional<NotesModel> findByIdAndAuthorUsername(Long id, String username);
     List<NotesModel> findByTitleContainingIgnoreCaseAndAuthor(String title, AppUser author);
 
 }

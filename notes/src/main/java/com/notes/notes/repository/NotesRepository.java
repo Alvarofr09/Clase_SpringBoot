@@ -13,4 +13,5 @@ public interface NotesRepository extends JpaRepository<NotesModel, Long>{
     Optional<NotesModel> findByIdAndAuthorUsername(Long id, String username);
     List<NotesModel> findByTitleContainingIgnoreCaseAndAuthor(String title, AppUser author);
 
+    NotesModel save(NotesModel noteModel, AppUser user);
 }

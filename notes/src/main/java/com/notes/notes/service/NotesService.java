@@ -46,9 +46,14 @@ public class NotesService {
         AppUser user = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        noteModel.setAuthor(user);
+        NotesModel newNote = new NotesModel(
+                noteModel.getTitle(),
+                noteModel.getDescription(),
+                noteModel.isComplete(),
+                user
+        );
 
-        return noteRepository.save(noteModel);
+        return noteRepository.save(newNote);
     }
 
     // Delete a note

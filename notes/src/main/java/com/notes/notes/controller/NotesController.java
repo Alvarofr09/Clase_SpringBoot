@@ -22,44 +22,44 @@ public class NotesController {
         this.noteService = noteService;
     }
 
+    @ModelAttribute("newNote")
+    public NotesModel newNote() { return new NotesModel();}
+
     @GetMapping
     public String listNotes(@RequestParam(value = "search", required = false) String search,
-                            Model model, Principal principal) {
+                            Model model) {
         if (search != null && !search.isEmpty()) {
-            model.addAttribute("notes", noteService.getNoteByTitleContainingAndAuthor(search, principal));
+            model.addAttribute("notes", noteService.findByTitleContainignFor(search));
         } else {
-            model.addAttribute("notes", noteService.getAllNotesByUsername(principal));
+            model.addAttribute("notes", noteService.findAllForCurrentUser());
         }
         return "index";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/create")
+    public String showCreateForm() {
+        return "newNote";
+    }
+
+    @PostMapping("/create")
+    public String createNote(@ModelAttribute("newNote") NotesModel noteModel) {
+        noteService.createFor(noteModel);
+        return "redirect:/notes";
+    }
+
+    @GetMapping("/{id:[0-9]+}")
     public String seeDetailsNote(@PathVariable long id, Model model) {
-        NotesModel noteModel = noteService.getNoteById(id)
+        NotesModel noteModel = noteService.findByIdFor(id)
                 .orElseThrow(() -> new NoteNotFoundException(id));
         model.addAttribute("note", noteModel);
         return "noteDetails";
     }
 
     @PutMapping("/{id}")
-    public String updateNote(@PathVariable long id, @ModelAttribute NotesModel updatedNote, Principal principal) {
-        updatedNote.setId(id);
-        noteService.updateNote(updatedNote, principal);
+    public String updateNote(@ModelAttribute("note") NotesModel updatedNote) {
+        noteService.updateFor(updatedNote);
         return "redirect:/notes";
     }
-
-    @GetMapping("/newNote")
-    public String showNewNoteForm(Model model) {
-        model.addAttribute("note", new NotesModel());
-        return "newNote";
-    }
-
-    @PostMapping("/newNote")
-    public String newNote(@ModelAttribute NotesModel noteModel, Principal principal) {
-        noteService.createNewNote(noteModel, principal);
-        return "redirect:/notes";
-    }
-
 
     @DeleteMapping("/{id}")
     public String deleteNote(@PathVariable long id) {

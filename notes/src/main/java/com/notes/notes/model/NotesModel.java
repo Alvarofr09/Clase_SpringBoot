@@ -56,4 +56,12 @@ public class NotesModel {
     public void setAuthor(AppUser author) {
         this.author = author;
     }
+
+    public NotesModel(){};
+
+    public  NotesModel(String title, String description, boolean complete) {
+        this.title = title;
+        this.description = description;
+        this.complete = complete;
+    }
 }

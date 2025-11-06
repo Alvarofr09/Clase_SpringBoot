@@ -6,6 +6,7 @@ import com.notes.notes.model.AppUser;
 import com.notes.notes.model.NotesModel;
 import com.notes.notes.repository.AppUserRepository;
 import com.notes.notes.repository.NotesRepository;
+import com.notes.notes.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,46 +28,27 @@ public class NotesService {
     }
 
     // Get all notes
-    public List<NotesModel> getAllNotesByUsername(Principal principal) {
-        String username = principal.getName();
+    public List<NotesModel> findAllForCurrentUser() {
+        String username = getAuthenticatedUsername();
         return noteRepository.findByAuthorUsername(username);
     }
 
     // Get note by id
-    public Optional<NotesModel> getNoteById(long id) {
-        return noteRepository.findById(id);
-    }
-
-    // Get note by Title and user
-    public List<NotesModel> getNoteByTitleAndAuthor(String title, Principal principal) {
-        AppUser user = appUserRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-        return noteRepository.findByTitleAndAuthor(title, user);
-    }
-
-    public List<NotesModel> getNoteByTitleContainingAndAuthor(String title, Principal principal) {
-        AppUser user = appUserRepository.findByUsername(principal.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-
-        return noteRepository.findByTitleContainingIgnoreCaseAndAuthor(title, user);
+    public Optional<NotesModel> findByIdFor(long id) {
+        String username = getAuthenticatedUsername();
+        return noteRepository.findByIdAndAuthorUsername(id, username);
     }
 
     // Create a new note
-    public NotesModel createNewNote(NotesModel noteModel, Principal principal) {
+    public NotesModel createFor(NotesModel noteModel) {
         // Buscar el usuario
-        AppUser user = appUserRepository.findByUsername(principal.getName())
+        String username = getAuthenticatedUsername();
+        AppUser user = appUserRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        // Crear nueva nota
-        NotesModel note = new NotesModel();
-        note.setTitle(noteModel.getTitle());
-        note.setDescription(noteModel.getDescription());
-        note.setComplete(noteModel.isComplete());
-        note.setAuthor(user);
+        noteModel.setAuthor(user);
 
-
-        return noteRepository.save(note);
+        return noteRepository.save(noteModel);
     }
 
     // Delete a note
@@ -75,11 +57,12 @@ public class NotesService {
     }
 
     // Update an existing note
-    public NotesModel updateNote(NotesModel noteModel, Principal principal){
+    public NotesModel updateFor(NotesModel noteModel){
+        String username = getAuthenticatedUsername();
         NotesModel existingNote = noteRepository.findById(noteModel.getId())
                 .orElseThrow(() -> new NoSuchElementException("Note not found with ID: " + noteModel.getId()));
 
-        if (!existingNote.getAuthor().getUsername().equals(principal.getName())) {
+        if (!existingNote.getAuthor().getUsername().equals(username)) {
             throw new UnauthorizedAccessException("No tienes permiso para editar esta nota");
         }
 
@@ -90,5 +73,18 @@ public class NotesService {
         return noteRepository.save(existingNote);
     }
 
+    public List<NotesModel> findByTitleContainignFor(String title) {
+        String username = getAuthenticatedUsername();
+        AppUser user = appUserRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+        return noteRepository.findByTitleContainingIgnoreCaseAndAuthor(title, user);
+    }
+
+    private String getAuthenticatedUsername() {
+        String username = SecurityUtils.getCurrentUsername();
+        if (username == null)
+            throw new UnauthorizedAccessException("No hay usuario autenticado");
+        return username;
+    }
 }

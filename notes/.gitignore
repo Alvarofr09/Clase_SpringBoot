@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 
 .env
+pom.xml
 
 ### STS ###
 .apt_generated

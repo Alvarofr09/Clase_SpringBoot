@@ -1,8 +1,10 @@
 package com.notes.notes.controller;
 
 import com.notes.notes.dto.RegisterDto;
+import com.notes.notes.exception.DuplicateUsernameException;
 import com.notes.notes.model.AppUser;
 import com.notes.notes.repository.AppUserRepository;
+import com.notes.notes.service.AuthService;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,13 +19,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Validated
 public class AuthController {
 
-    private final AppUserRepository repository;
-    private final PasswordEncoder encoder;
+    private final AuthService authService;
 
     @Autowired
-    public AuthController(AppUserRepository repository, PasswordEncoder encoder) {
-        this.repository = repository;
-        this.encoder = encoder;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
 
     @GetMapping("/login")
@@ -41,19 +41,13 @@ public class AuthController {
     // Procesar el registro
     @PostMapping("/register")
     public String Register(@ModelAttribute("userDto") @Validated RegisterDto dto, Model model) {
-        // validacion si existe el usuario
-        if (repository.existsByUsername(dto.username())) {
-            model.addAttribute("error", "El usuario ya existe");
+        try {
+            authService.register(dto.username(), dto.password());
+            return "redirect:/login?registered";
+        } catch (DuplicateUsernameException e) {
+            model.addAttribute("error", e.getMessage());
             return "register";
         }
-        AppUser u = new AppUser();
-        u.setUsername(dto.username());
-        u.setPassword(encoder.encode(dto.password()));
-        u.setRole("ROLE_USER");
-
-        repository.save(u);
-
-        return "redirect:/login?registered";
     }
 
     @GetMapping("/logout")

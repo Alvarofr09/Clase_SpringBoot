@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS app_user (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY;
+    username VARCHAR(50) NOT NULL UNIQUE;
+    password VARCHAR(255) NOT NULL;
+    role VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS notes_model (
+    id INT AUTO_INCREMENT PRIMARY KEY;
+    title VARCHAR(255);
+    description TEXT;
+    complete BOOLEAN DEFAULT FALSE;
+    user_id BIGINT NOT NULL;
+    CONSTRAINT fk_user FOREIGN KEY (user_id)
+        REFERENCES app_user(id)
+        ON DELETE CASCADE
+);

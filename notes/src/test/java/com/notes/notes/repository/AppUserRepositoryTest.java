@@ -1,6 +1,6 @@
 package com.notes.notes.repository;
 
-import com.notes.notes.model.AppUser;
+import com.notes.notes.model.AppUserModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,10 +16,10 @@ public class AppUserRepositoryTest {
 
     @Test
     void testFindByUsername_Exist() {
-        AppUser user = new AppUser("usuario", "pass", "ROLE_USER");
+        AppUserModel user = new AppUserModel("usuario", "pass", "ROLE_USER");
         repository.save(user);
 
-        Optional<AppUser> found = repository.findByUsername("usuario");
+        Optional<AppUserModel> found = repository.findByUsername("usuario");
 
         System.out.println(found);
 

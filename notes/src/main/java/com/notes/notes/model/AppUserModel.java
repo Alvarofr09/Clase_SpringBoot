@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class AppUser {
+public class AppUserModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,17 +21,17 @@ public class AppUser {
     private String role;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private java.util.List<NotesModel> notes = new java.util.ArrayList<>();
+    private java.util.List<NoteModel> notes = new java.util.ArrayList<>();
 
-    public List<NotesModel> getNotes() {
+    public List<NoteModel> getNotes() {
         return notes;
     }
 
-    public void setNotes(List<NotesModel> notes) {
+    public void setNotes(List<NoteModel> notes) {
         this.notes = notes;
     }
 
-    public AppUser(){}
+    public AppUserModel(){}
 
     public long getId() {
         return id;
@@ -65,14 +65,14 @@ public class AppUser {
         this.role = role;
     }
 
-    public AppUser(Long id, String username, String password, String role) {
+    public AppUserModel(Long id, String username, String password, String role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
     }
 
-    public AppUser(String username, String password, String role) {
+    public AppUserModel(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;

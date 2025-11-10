@@ -1,7 +1,7 @@
 package com.notes.notes.service;
 
 import com.notes.notes.exception.DuplicateUsernameException;
-import com.notes.notes.model.AppUser;
+import com.notes.notes.model.AppUserModel;
 import com.notes.notes.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,7 +24,7 @@ public class AuthService {
         if (repository.existsByUsername(username)) {
             throw new DuplicateUsernameException("El usuario ya existe");
         }
-        AppUser u = new AppUser();
+        AppUserModel u = new AppUserModel();
         u.setUsername(username);
         u.setPassword(encoder.encode(rawPassword));
         u.setRole("ROLE_USER");

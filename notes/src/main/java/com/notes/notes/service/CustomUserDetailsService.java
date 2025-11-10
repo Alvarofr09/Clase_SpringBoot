@@ -1,6 +1,6 @@
 package com.notes.notes.service;
 
-import com.notes.notes.model.AppUser;
+import com.notes.notes.model.AppUserModel;
 import com.notes.notes.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser u = repository.findByUsername(username)
+        AppUserModel u = repository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         return org.springframework.security.core.userdetails.User

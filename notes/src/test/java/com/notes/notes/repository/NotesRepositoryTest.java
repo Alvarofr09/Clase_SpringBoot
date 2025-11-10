@@ -1,17 +1,14 @@
 package com.notes.notes.repository;
 
-import com.notes.notes.model.NotesModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
-import java.util.Optional;
 
 @DataJpaTest
 public class NotesRepositoryTest {
 
     @Autowired
-    private NotesRepository notesRepository;
+    private NoteRepository notesRepository;
 
     @Test
     void testSaveNote() {

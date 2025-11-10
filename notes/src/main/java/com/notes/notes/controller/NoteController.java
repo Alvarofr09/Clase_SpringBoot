@@ -1,29 +1,26 @@
 package com.notes.notes.controller;
 
 import com.notes.notes.exception.NoteNotFoundException;
-import com.notes.notes.model.NotesModel;
-import com.notes.notes.service.NotesService;
+import com.notes.notes.model.NoteModel;
+import com.notes.notes.service.NoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
-import java.util.List;
-
 @Controller
 @RequestMapping("/notes")
-public class NotesController {
+public class NoteController {
 
-    private final NotesService noteService;
+    private final NoteService noteService;
 
     @Autowired
-    public NotesController(NotesService noteService) {
+    public NoteController(NoteService noteService) {
         this.noteService = noteService;
     }
 
     @ModelAttribute("newNote")
-    public NotesModel newNote() { return new NotesModel();}
+    public NoteModel newNote() { return new NoteModel();}
 
     @GetMapping
     public String listNotes(@RequestParam(value = "search", required = false) String search,
@@ -42,21 +39,21 @@ public class NotesController {
     }
 
     @PostMapping("/create")
-    public String createNote(@ModelAttribute("newNote") NotesModel noteModel) {
+    public String createNote(@ModelAttribute("newNote") NoteModel noteModel) {
         noteService.createFor(noteModel);
         return "redirect:/notes";
     }
 
     @GetMapping("/{id:[0-9]+}")
     public String seeDetailsNote(@PathVariable long id, Model model) {
-        NotesModel noteModel = noteService.findByIdFor(id)
+        NoteModel noteModel = noteService.findByIdFor(id)
                 .orElseThrow(() -> new NoteNotFoundException(id));
         model.addAttribute("note", noteModel);
         return "noteDetails";
     }
 
     @PutMapping("/{id}")
-    public String updateNote(@ModelAttribute("note") NotesModel updatedNote) {
+    public String updateNote(@ModelAttribute("note") NoteModel updatedNote) {
         noteService.updateFor(updatedNote);
         return "redirect:/notes";
     }

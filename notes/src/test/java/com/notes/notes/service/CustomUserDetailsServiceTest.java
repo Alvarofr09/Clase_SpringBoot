@@ -1,6 +1,6 @@
 package com.notes.notes.service;
 
-import com.notes.notes.model.AppUser;
+import com.notes.notes.model.AppUserModel;
 import com.notes.notes.repository.AppUserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ public class CustomUserDetailsServiceTest {
 
     @Test
     void loadUserByUsername_UserExist() {
-        AppUser user = new AppUser(1L, "usuario", "pass", "ROLE_USER");
+        AppUserModel user = new AppUserModel(1L, "usuario", "pass", "ROLE_USER");
         when(repository.findByUsername("usuario")).thenReturn(Optional.of(user));
 
         UserDetails result = service.loadUserByUsername("usuario");

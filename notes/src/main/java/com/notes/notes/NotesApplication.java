@@ -10,7 +10,7 @@ public class NotesApplication {
     public static void main(String[] args) {
         // Cargar el .env que está en la raíz del proyecto
         Dotenv dotenv = Dotenv.configure()
-                .directory("./notes")  // Ruta raíz del proyecto (donde está el .env)
+                .directory("./notes")
                 .ignoreIfMissing()
                 .load();
 

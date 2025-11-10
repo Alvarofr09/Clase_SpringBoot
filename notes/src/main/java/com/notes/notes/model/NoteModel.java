@@ -3,7 +3,7 @@ package com.notes.notes.model;
 import jakarta.persistence.*;
 
 @Entity
-public class NotesModel {
+public class NoteModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class NotesModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private AppUser author;
+    private AppUserModel author;
 
 
     public long getId() {
@@ -55,13 +55,13 @@ public class NotesModel {
         this.complete = complete;
     }
 
-    public AppUser getAuthor() {
+    public AppUserModel getAuthor() {
         return author;
     }
 
-    public NotesModel(){};
+    public NoteModel(){};
 
-    public NotesModel(String title, String description, boolean complete, AppUser author) {
+    public NoteModel(String title, String description, boolean complete, AppUserModel author) {
         this.title = title;
         this.description = description;
         this.complete = complete;

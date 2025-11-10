@@ -8,8 +8,14 @@ public class NotesModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private boolean complete;
 
     @ManyToOne(fetch = FetchType.LAZY)

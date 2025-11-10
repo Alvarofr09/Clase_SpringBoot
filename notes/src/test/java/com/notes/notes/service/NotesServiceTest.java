@@ -42,7 +42,7 @@ class NotesServiceTest {
 
         when(notesRepository.findByAuthorUsername("usuario")).thenReturn(Arrays.asList(nota1, nota2));
 
-        List<NoteModel> result = notesService.findAllForCurrentUser();
+        List<NoteModel> result = notesService.findAllFor(mockPrincipal.getName());
 
         assertEquals(2, result.size());
         assertEquals("Nota 1", result.get(0).getTitle());
@@ -51,12 +51,13 @@ class NotesServiceTest {
 
     @Test
     void testGetNoteById_Found() {
+        Principal mockPrincipal = () -> "usuario";
         NoteModel nota1 = new NoteModel("T", "D", false, new AppUserModel());
         nota1.setId(1L);
 
         when(notesRepository.findById(1L)).thenReturn(Optional.of(nota1));
 
-        Optional<NoteModel> result = notesService.findByIdFor(1L);
+        Optional<NoteModel> result = notesService.findByIdFor(1L, mockPrincipal.getName());
 
         assertTrue(result.isPresent());
         assertEquals(1L, result.get().getId());
@@ -65,9 +66,10 @@ class NotesServiceTest {
 
     @Test
     void testGetNoteById_NotFound() {
+        Principal mockPrincipal = () -> "usuario";
         when(notesRepository.findById(99L)).thenReturn(Optional.empty());
 
-        Optional<NoteModel> result = notesService.findByIdFor(99L);
+        Optional<NoteModel> result = notesService.findByIdFor(99L, mockPrincipal.getName());
 
         assertTrue(result.isEmpty());
         verify(notesRepository).findById(99L);
@@ -83,7 +85,7 @@ class NotesServiceTest {
 
         NoteModel nota = new NoteModel("Título", "Descripción", false, null);
 
-        NoteModel result = notesService.createFor(nota);
+        NoteModel result = notesService.createFor(nota, mockPrincipal.getName());
 
         assertEquals("Título", result.getTitle());
         assertEquals("usuario", result.getAuthor().getUsername());
@@ -97,14 +99,15 @@ class NotesServiceTest {
 
         NoteModel nota = new NoteModel("T", "D", false, null);
 
-        assertThrows(RuntimeException.class, () -> notesService.createFor(nota));
+        assertThrows(RuntimeException.class, () -> notesService.createFor(nota, mockPrincipal.getName()));
     }
 
     @Test
     void testDeleteNote() {
+        Principal mockPrincipal = () -> "usuario";
         doNothing().when(notesRepository).deleteById(1L);
 
-        notesService.deleteNote(1L);
+        notesService.deleteByIdFor(1L, mockPrincipal.getName());
 
         verify(notesRepository).deleteById(1L);
     }

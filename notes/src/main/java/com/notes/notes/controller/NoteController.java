@@ -3,64 +3,75 @@ package com.notes.notes.controller;
 import com.notes.notes.exception.NoteNotFoundException;
 import com.notes.notes.model.NoteModel;
 import com.notes.notes.service.NoteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/notes")
+@RequestMapping("/")
 public class NoteController {
 
     private final NoteService noteService;
 
-    @Autowired
     public NoteController(NoteService noteService) {
         this.noteService = noteService;
     }
 
     @ModelAttribute("newNote")
-    public NoteModel newNote() { return new NoteModel();}
+    public NoteModel newNote() {
+        return new NoteModel();
+    }
 
     @GetMapping
-    public String listNotes(@RequestParam(value = "search", required = false) String search,
-                            Model model) {
-        if (search != null && !search.isEmpty()) {
-            model.addAttribute("notes", noteService.findByTitleContainignFor(search));
-        } else {
-            model.addAttribute("notes", noteService.findAllForCurrentUser());
-        }
+    public String listNotes(Model model,
+                            @AuthenticationPrincipal User authUser) {
+        model.addAttribute("notes", noteService.findAllFor(authUser.getUsername()));
         return "index";
     }
 
-    @GetMapping("/create")
+    @GetMapping("/notes")
+    public String listNotesAlias(Model model,
+                                 @AuthenticationPrincipal User authUser) {
+        model.addAttribute("notes", noteService.findAllFor(authUser.getUsername()));
+        return "index";
+    }
+
+    @GetMapping("/notes/{id}")
+    public String viewNote(@PathVariable Long id,
+                           Model model,
+                           @AuthenticationPrincipal User authUser) {
+        var note = noteService.findByIdFor(id, authUser.getUsername())
+                .orElseThrow(() -> new NoteNotFoundException(id));
+        model.addAttribute("note", note);
+        return "noteDetails";
+    }
+
+    @GetMapping("/notes/create")
     public String showCreateForm() {
         return "newNote";
     }
 
-    @PostMapping("/create")
-    public String createNote(@ModelAttribute("newNote") NoteModel noteModel) {
-        noteService.createFor(noteModel);
-        return "redirect:/notes";
+    @PostMapping("/notes/new")
+    public String createNote(@ModelAttribute("newNote") NoteModel note,
+                             @AuthenticationPrincipal User authUser) {
+        noteService.createFor(note, authUser.getUsername());
+        return "redirect:/";
     }
 
-    @GetMapping("/{id:[0-9]+}")
-    public String seeDetailsNote(@PathVariable long id, Model model) {
-        NoteModel noteModel = noteService.findByIdFor(id)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-        model.addAttribute("note", noteModel);
-        return "noteDetails";
+    @PutMapping("/notes/{id}")
+    public String updateNote(@PathVariable Long id,
+                             @ModelAttribute("note") NoteModel updatedNote,
+                             @AuthenticationPrincipal User authUser) {
+        noteService.updateFor(id, updatedNote, authUser.getUsername());
+        return "redirect:/notes/" + id;
     }
 
-    @PutMapping("/{id}")
-    public String updateNote(@ModelAttribute("note") NoteModel updatedNote) {
-        noteService.updateFor(updatedNote);
-        return "redirect:/notes";
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteNote(@PathVariable long id) {
-        noteService.deleteNote(id);
-        return "redirect:/notes";
+    @DeleteMapping("/notes/{id}")
+    public String deleteNote(@PathVariable Long id,
+                             @AuthenticationPrincipal User authUser) {
+        noteService.deleteByIdFor(id, authUser.getUsername());
+        return "redirect:/";
     }
 }
